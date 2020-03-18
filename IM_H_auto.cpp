@@ -18,8 +18,8 @@ Mat image_remap_auto(Mat im_src, int q)
 
 	if (q == 2) // rear
 	{
-		pts_lu = Point2f(0, 615);
-		pts_ru = Point2f(1024, 650);
+		pts_lu = Point2f(0, 620);
+		pts_ru = Point2f(1024, 620);
 		pts_rb = Point2f(1024, 1000);
 		pts_lb = Point2f(0, 1000);
 
@@ -55,11 +55,20 @@ Mat image_remap_auto(Mat im_src, int q)
 	pts_src.push_back(pts_rb);
 	pts_src.push_back(pts_lb);
 
-
-	pts_dst.push_back(Point2f(0.0f, 0.0f));
-	pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
-	pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
-	pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
+	if (q == 2) // destination points for rear view
+	{
+		pts_dst.push_back(Point2f(0.0f, 200.0f));
+		pts_dst.push_back(Point2f(size.width - 1.0f, 200.0f));
+		pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
+		pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
+	}
+	else // destination points for left and right view
+	{
+		pts_dst.push_back(Point2f(0.0f, 0.0f));
+		pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
+		pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
+		pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
+	}
 	
 
 	Mat homogr = findHomography(pts_src, pts_dst);

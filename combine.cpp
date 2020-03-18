@@ -33,18 +33,18 @@ Mat combine(Mat img_re, Mat img_le, Mat img_ri)
 
 	// Create destination image
 
-	Mat dst = Mat(1000, 1300, CV_8UC3);
+	Mat dst = Mat(1200, 1500, CV_8UC3);
 
-	resize(img_ri, img_ri, Size(200, 600));
-	resize(img_le, img_le, Size(200, 600));
-	resize(img_re, img_re, Size(667, 267));
+	//resize(img_ri, img_ri, Size(200, 600));
+	//resize(img_le, img_le, Size(200, 600));
+	//resize(img_re, img_re, Size(667, 267));
 
 	
 	Mat mask;
 	vector<Mat> layers;
-	int he = 200;
-	int wi1 = 320;
-	int wi2 = 790;
+	int he = 230;
+	int wi1 = 330;
+	int wi2 = 930;
 
 	// Split 4 channels, merge BGR channels and setting the alpha channel as a mask
 
@@ -65,7 +65,6 @@ Mat combine(Mat img_re, Mat img_le, Mat img_ri)
 	mask = layers[3];
 	merge(rgb3, 3, img_re);
 	img_re.copyTo(dst.rowRange(30, 30 + img_re.rows).colRange(330, 330 + img_re.cols), mask);
-
 	
 	return dst;
 }
