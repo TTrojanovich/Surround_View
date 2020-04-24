@@ -18,33 +18,33 @@ Mat image_remap_auto(Mat im_src, int q)
 
 	if (q == 2) // rear
 	{
-		pts_lu = Point2f(0, 620);
-		pts_ru = Point2f(1024, 620);
-		pts_rb = Point2f(1024, 1000);
-		pts_lb = Point2f(0, 1000);
+		pts_lu = Point2f(0, 600); // 0 620
+		pts_ru = Point2f(1023, 600); // 1023 620
+		pts_rb = Point2f(1023, 950); // 1023 1000
+		pts_lb = Point2f(0, 950); // 0 1000
 
 		w = 900; h = 400;
 		displace_l = 300; displace_r = 300;
 	}
 	else if (q == 1) // right
 	{
-		pts_lu = Point2f(200, 700);
-		pts_ru = Point2f(1023, 650);
-		pts_rb = Point2f(1023, 1023);
-		pts_lb = Point2f(0, 880);
+		pts_lu = Point2f(200, 650); // 200 650
+		pts_ru = Point2f(1023, 550); // 1023 550
+		pts_rb = Point2f(1023, 1023); // 1023 1023
+		pts_lb = Point2f(0, 850); // 0 850
 
 		w = 900; h = 300;
-		displace_l = 0; displace_r = 200;
+		displace_l = 200; displace_r = 200;
 	}
 	else if (q == 0) // left
 	{
-		pts_lu = Point2f(0, 650);
-		pts_ru = Point2f(780, 700);
-		pts_rb = Point2f(1023, 830);
-		pts_lb = Point2f(0, 1023);
+		pts_lu = Point2f(0, 480); // 0 550
+		pts_ru = Point2f(780, 580); // 780 650
+		pts_rb = Point2f(1023, 850); // 1023 850
+		pts_lb = Point2f(0, 1023); // 0 1023
 
 		w = 900; h = 300;
-		displace_l = 200; displace_r = 0;
+		displace_l = 200; displace_r = 200;
 	}
 
 	Size size(w, h);

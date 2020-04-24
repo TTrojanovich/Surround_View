@@ -13,9 +13,9 @@ int main(int argc, char** argv)
 	// Put images in vectors
 	Mat im_rear, im_left, im_right;
 
-	string folder_rear("imgs/dataset/rear/*.png");
-	string folder_left("imgs/dataset/left/*.png");
-	string folder_right("imgs/dataset/right/*.png");
+	string folder_rear("imgs/datasets/dataset 4/rear/*.png");
+	string folder_left("imgs/datasets/dataset 4/left/*.png");
+	string folder_right("imgs/datasets/dataset 4/right/*.png");
 
 	vector<cv::String> im_names_rear1;
 	vector<cv::String> im_names_left1;
@@ -62,6 +62,7 @@ int main(int argc, char** argv)
 		im_left = im_names_left[i];
 		im_right = im_names_right[i];
 
+
 #define show_
 #ifdef show_0
 		imshow("Image distorted rear", im_rear);
@@ -106,7 +107,7 @@ int main(int argc, char** argv)
 		imshow("Image undistorted left", im_left_eq);
 		imshow("Image undistorted right", im_right_eq);
 #endif
-
+		
 		// Top view remapping
 #define process_3
 #ifdef process_3
@@ -120,12 +121,27 @@ int main(int argc, char** argv)
 		imshow("Image remapped left", im_left_remap);
 		imshow("Image remapped right", im_right_remap);
 #endif
+		
+		//imshow("rear", im_rear_remap);
+		//imshow("left", im_left_remap);
+		//waitKey(0);
+		//imwrite("imgs/61.png", im_rear_remap);
+		//imwrite("imgs/62.png", im_left_remap);
+
+#define process_SIFT_
+#ifdef process_SIFT_1
+		sift_proceeding(im_rear_remap, im_left_remap);
+		waitKey(0);
+#endif
 
 		// Merge 3 images in 1
 #define process_4
 #ifdef process_4
 		Mat temp = combine(im_rear_remap, im_left_remap, im_right_remap);
-		imshow("Combined image", temp);
+		namedWindow("Combined image", WINDOW_NORMAL);
+		resizeWindow("Combined image", 1200, 960);
+		imshow("Combined image", temp); 
+		waitKey(0);
 #endif
 
 
