@@ -7,34 +7,46 @@ using namespace std;
 using namespace cv;
 
 
+#define WITH_STORAGE_
+#define IMG_SHOW_
+#define PROCESS_1
+#define PROCESS_2
+#define PROCESS_3
+#define PROCESS_4
+#define PROCESS_5
+
 
 int main(int argc, char** argv)
 {
 	// Put images in vectors
-	Mat im_rear, im_left, im_right;
+	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
 
-	string folder_rear("imgs/datasets/dataset 4/rear/*.png");
-	string folder_left("imgs/datasets/dataset 4/left/*.png");
-	string folder_right("imgs/datasets/dataset 4/right/*.png");
+	string folder_rear("imgs/datasets/dataset 3/rear/*.png");
+	string folder_left("imgs/datasets/dataset 3/left/*.png");
+	string folder_right("imgs/datasets/dataset 3/right/*.png");
 
-	vector<cv::String> im_names_rear1;
-	vector<cv::String> im_names_left1;
-	vector<cv::String> im_names_right1;
+	vector<String> im_names_rear1;
+	vector<String> im_names_left1;
+	vector<String> im_names_right1;
 
-	vector<cv::Mat> im_names_rear;
-	vector<cv::Mat> im_names_left;
-	vector<cv::Mat> im_names_right;
+#ifdef WITH_STORAGE_1
+	vector<Mat> im_names_rear;
+	vector<Mat> im_names_left;
+	vector<Mat> im_names_right;
+#endif
 
 	glob(folder_rear, im_names_rear1, false);
 	glob(folder_left, im_names_left1, false);
 	glob(folder_right, im_names_right1, false);
 
+#ifdef WITH_STORAGE_1
 	for (size_t k = 0; k < im_names_rear1.size(); k++)
 	{
 		im_names_rear.push_back(imread(im_names_rear1[k], IMREAD_GRAYSCALE));
 		im_names_left.push_back(imread(im_names_left1[k], IMREAD_GRAYSCALE));
 		im_names_right.push_back(imread(im_names_right1[k], IMREAD_GRAYSCALE));
 	}
+#endif
 
 	// Create and initialize variables for camera intrinsics
 	cv::Mat K_le(3, 3, CV_64F), K_rh(3, 3, CV_64F), K_re(3, 3, CV_64F);
@@ -44,9 +56,9 @@ int main(int argc, char** argv)
 
 	// Precalculate data for undistortion
 	Mat mapx_re, mapy_re, mapx_rh, mapy_rh, mapx_le, mapy_le;
-	cv::initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, cv::Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
-	cv::initUndistortRectifyMap(K_rh, d_rh, Mat::eye(3, 3, CV_32FC1), K_rh, cv::Size(1024, 1024), CV_32FC1, mapx_rh, mapy_rh);
-	cv::initUndistortRectifyMap(K_le, d_le, Mat::eye(3, 3, CV_32FC1), K_le, cv::Size(1024, 1024), CV_32FC1, mapx_le, mapy_le);
+	cv::initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
+	cv::initUndistortRectifyMap(K_rh, d_rh, Mat::eye(3, 3, CV_32FC1), K_rh, Size(1024, 1024), CV_32FC1, mapx_rh, mapy_rh);
+	cv::initUndistortRectifyMap(K_le, d_le, Mat::eye(3, 3, CV_32FC1), K_le, Size(1024, 1024), CV_32FC1, mapx_le, mapy_le);
 
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,96 +66,93 @@ int main(int argc, char** argv)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	for (int i = 0; i < im_names_rear.size(); i++)
+	for (int i = 0; i < im_names_rear1.size(); i++)
 	{
 		cout << "IMAGE NUM: " << i << endl;
-
+		
+#ifdef WITH_STORAGE_1
 		im_rear = im_names_rear[i];
 		im_left = im_names_left[i];
 		im_right = im_names_right[i];
+#else
+		im_rear = imread(im_names_rear1[i], IMREAD_GRAYSCALE);
+		im_left = imread(im_names_left1[i], IMREAD_GRAYSCALE);
+		im_right = imread(im_names_right1[i], IMREAD_GRAYSCALE);
+#endif
 
-
-#define show_
-#ifdef show_0
+		
+#ifdef IMG_SHOW_0
 		imshow("Image distorted rear", im_rear);
 		imshow("Image distorted left", im_left);
 		imshow("Image distorted right", im_right);
 #endif
 
+
 		// Convert colors from Bayer to BGRA
-		auto aa1 = getTickCount();
-#define process_1
-#ifdef process_1
+		auto time_tag_1 = getTickCount();
+#ifdef PROCESS_1
 		cvtColor(im_rear, im_rear, COLOR_BayerBG2BGRA);
 		cvtColor(im_left, im_left, COLOR_BayerBG2BGRA);
 		cvtColor(im_right, im_right, COLOR_BayerBG2BGRA);
 #endif
-		auto aa2 = getTickCount();
-		cout << "cvtColor TIME: " << to_string((aa2 - aa1) / getTickFrequency()) << endl;
+		auto time_tag_2 = getTickCount();
+		cout << "cvtColor TIME: " << to_string((time_tag_2 - time_tag_1) / getTickFrequency()) << endl;
 
 
-#ifdef show_1
+#ifdef IMG_SHOW_1
 		imshow("Image distorted rear", im_rear);
 		imshow("Image distorted left", im_left);
 		imshow("Image distorted right", im_right);
 #endif
 
+
 		// Fisheye undistortion
-		auto aa3 = getTickCount();
-#define process_2
-#ifdef process_2
-		Mat im_rear_eq, im_right_eq, im_left_eq;
+		auto time_tag_3 = getTickCount();
+#ifdef PROCESS_2
+		Mat im_rear_eq, im_right_eq, im_left_eq, im_front_eq;
 		remap(im_rear, im_rear_eq, mapx_re, mapy_re, INTER_LINEAR, BORDER_CONSTANT);
 		remap(im_right, im_right_eq, mapx_rh, mapy_rh, INTER_LINEAR, BORDER_CONSTANT);
 		remap(im_left, im_left_eq, mapx_le, mapy_le, INTER_LINEAR, BORDER_CONSTANT);
 #endif
-		auto aa4 = getTickCount();
-		cout << "undistort TIME: " << to_string((aa4 - aa3) / getTickFrequency()) << endl << endl;
+		auto time_tag_4 = getTickCount();
+		cout << "undistort TIME: " << to_string((time_tag_4 - time_tag_3) / getTickFrequency()) << endl << endl;
 
-
-
-#ifdef show_2
+		
+#ifdef IMG_SHOW_2
 		imshow("Image undistorted rear", im_rear_eq);
 		imshow("Image undistorted left", im_left_eq);
 		imshow("Image undistorted right", im_right_eq);
 #endif
-		
+
+
+#ifdef PROCESS_4
+		im_left_eq = color_corr(im_rear_eq, im_left_eq);
+		im_right_eq = color_corr(im_rear_eq, im_right_eq);
+#endif
+
+
 		// Top view remapping
-#define process_3
-#ifdef process_3
+#ifdef PROCESS_3
 		Mat im_rear_remap = image_remap_auto(im_rear_eq, 2);
 		Mat im_right_remap = image_remap_auto(im_right_eq, 1);
 		Mat im_left_remap = image_remap_auto(im_left_eq, 0);
 #endif
 
-#ifdef show_3
+
+#ifdef IMG_SHOW_3
 		imshow("Image remapped rear", im_rear_remap);
 		imshow("Image remapped left", im_left_remap);
 		imshow("Image remapped right", im_right_remap);
 #endif
-		
-		//imshow("rear", im_rear_remap);
-		//imshow("left", im_left_remap);
-		//waitKey(0);
-		//imwrite("imgs/61.png", im_rear_remap);
-		//imwrite("imgs/62.png", im_left_remap);
 
-#define process_SIFT_
-#ifdef process_SIFT_1
-		sift_proceeding(im_rear_remap, im_left_remap);
-		waitKey(0);
-#endif
 
 		// Merge 3 images in 1
-#define process_4
-#ifdef process_4
-		Mat temp = combine(im_rear_remap, im_left_remap, im_right_remap);
+#ifdef PROCESS_5
+		Mat verdict = combine(im_rear_remap, im_left_remap, im_right_remap);
 		namedWindow("Combined image", WINDOW_NORMAL);
-		resizeWindow("Combined image", 1200, 960);
-		imshow("Combined image", temp); 
-		waitKey(0);
+		resizeWindow("Combined image", int(1700 * 0.6), int(1500 * 0.6));
+		imshow("Combined image", verdict);
 #endif
-
 
 		int key = waitKey(1);
 		if (key == 27) break;

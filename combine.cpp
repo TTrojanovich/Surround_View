@@ -43,15 +43,11 @@ Mat combine(Mat img_re, Mat img_le, Mat img_ri)
 
 	// Create destination image
 
-	Mat dst = Mat(1200, 1500, CV_8UC3);
-
-	//resize(img_ri, img_ri, Size(200, 600));
-	//resize(img_le, img_le, Size(200, 600));
-	//resize(img_re, img_re, Size(667, 267));
+	Mat dst = Mat(1500, 1700, CV_8UC3); // 1200 1500
 
 	Mat mask;
 	vector<Mat> layers;
-	int he = 230;
+	int he = 150;
 	int wi1 = 330;
 	int wi2 = 930;
 	int he1 = 30;
