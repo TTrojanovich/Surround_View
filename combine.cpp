@@ -8,7 +8,9 @@ using namespace cv;
 Mat combine(Mat img_re, Mat img_le, Mat img_ri)
 {
 	Mat img_car = imread("imgs/datasets/car_model.png", IMREAD_UNCHANGED);
-	Size car_size = img_car.size();
+	resize(img_car, img_car, Size(745 * 1.15, 400 * 1.15));
+
+	Size car_size = img_car.size(); cout << car_size << endl;
 	int w_car = car_size.width, h_car = car_size.height;
 
 	Size i_size = img_ri.size();
@@ -43,16 +45,16 @@ Mat combine(Mat img_re, Mat img_le, Mat img_ri)
 
 	// Create destination image
 
-	Mat dst = Mat(1500, 1700, CV_8UC3); // 1200 1500
+	Mat dst = Mat(1400, 1500, CV_8UC3); // 1200 1500
 
 	Mat mask;
 	vector<Mat> layers;
-	int he = 150;
+	int he = 30;
 	int wi1 = 330;
-	int wi2 = 930;
+	int wi2 = 980;
 	int he1 = 30;
 	int he2 = he1 - 15 + img_re.rows;
-	int wi3 = wi1 - 50 + img_re.cols / 3;
+	int wi3 = wi1 - 80 + img_re.cols / 3;
 
 	// Split 4 channels, merge BGR channels and setting the alpha channel as a mask
 

@@ -7,6 +7,7 @@ using namespace std;
 using namespace cv;
 
 
+#define W (63 * CV_PI / 180)
 #define WITH_STORAGE_
 #define IMG_SHOW_
 #define PROCESS_1
@@ -21,9 +22,9 @@ int main(int argc, char** argv)
 	// Put images in vectors
 	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
 
-	string folder_rear("imgs/datasets/dataset 3/rear/*.png");
-	string folder_left("imgs/datasets/dataset 3/left/*.png");
-	string folder_right("imgs/datasets/dataset 3/right/*.png");
+	string folder_rear("imgs/datasets/dataset 5/rear/*.png");
+	string folder_left("imgs/datasets/dataset 5/left/*.png");
+	string folder_right("imgs/datasets/dataset 5/right/*.png");
 
 	vector<String> im_names_rear1;
 	vector<String> im_names_left1;
@@ -56,9 +57,12 @@ int main(int argc, char** argv)
 
 	// Precalculate data for undistortion
 	Mat mapx_re, mapy_re, mapx_rh, mapy_rh, mapx_le, mapy_le;
-	cv::initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
+	//cv::initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
 	cv::initUndistortRectifyMap(K_rh, d_rh, Mat::eye(3, 3, CV_32FC1), K_rh, Size(1024, 1024), CV_32FC1, mapx_rh, mapy_rh);
 	cv::initUndistortRectifyMap(K_le, d_le, Mat::eye(3, 3, CV_32FC1), K_le, Size(1024, 1024), CV_32FC1, mapx_le, mapy_le);
+
+	Mat map_x, map_y;
+	undistortFishEyeData(im_rear, W, map_x, map_y);
 
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +114,8 @@ int main(int argc, char** argv)
 		auto time_tag_3 = getTickCount();
 #ifdef PROCESS_2
 		Mat im_rear_eq, im_right_eq, im_left_eq, im_front_eq;
-		remap(im_rear, im_rear_eq, mapx_re, mapy_re, INTER_LINEAR, BORDER_CONSTANT);
+		//remap(im_rear, im_rear_eq, mapx_re, mapy_re, INTER_LINEAR, BORDER_CONSTANT);
+		im_rear_eq = undistortFishEye(im_rear, W, map_x, map_y);
 		remap(im_right, im_right_eq, mapx_rh, mapy_rh, INTER_LINEAR, BORDER_CONSTANT);
 		remap(im_left, im_left_eq, mapx_le, mapy_le, INTER_LINEAR, BORDER_CONSTANT);
 #endif
@@ -123,9 +128,9 @@ int main(int argc, char** argv)
 		imshow("Image undistorted left", im_left_eq);
 		imshow("Image undistorted right", im_right_eq);
 #endif
+		
 
-
-#ifdef PROCESS_4
+#ifdef PROCESS_
 		im_left_eq = color_corr(im_rear_eq, im_left_eq);
 		im_right_eq = color_corr(im_rear_eq, im_right_eq);
 #endif
@@ -150,8 +155,10 @@ int main(int argc, char** argv)
 #ifdef PROCESS_5
 		Mat verdict = combine(im_rear_remap, im_left_remap, im_right_remap);
 		namedWindow("Combined image", WINDOW_NORMAL);
-		resizeWindow("Combined image", int(1700 * 0.6), int(1500 * 0.6));
+		resizeWindow("Combined image", int(1500 * 0.8), int(1400 * 0.8));
 		imshow("Combined image", verdict);
+		//waitKey(0);
+		imwrite("example.png", verdict);
 #endif
 
 		int key = waitKey(1);

@@ -36,7 +36,7 @@ Mat color_corr(Mat src, Mat dst)
 	src.convertTo(src, CV_32F);
 	dst.convertTo(dst, CV_32F);
 	
-	double lMeanSrc=0, lStdSrc = 0, aMeanSrc = 0, aStdSrc = 0, bMeanSrc = 0, bStdSrc = 0, lMeanDst = 0, lStdDst = 0, aMeanDst = 0, aStdDst = 0, bMeanDst = 0, bStdDst = 0;
+	double lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc, lMeanDst, lStdDst, aMeanDst, aStdDst, bMeanDst, bStdDst;
 	image_stats(src, lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc);
 	image_stats(dst, lMeanDst, lStdDst, aMeanDst, aStdDst, bMeanDst, bStdDst);
 

@@ -18,32 +18,32 @@ Mat image_remap_auto(Mat im_src, int q)
 
 	if (q == 2) // rear
 	{
-		pts_lu = Point2f(0, 620); // 0 600
-		pts_ru = Point2f(1023, 620); // 1023 600
-		pts_rb = Point2f(1023, 950); // 1023 950
-		pts_lb = Point2f(0, 950); // 0 950
+		pts_lu = Point2f(0, 620); // 0 620
+		pts_ru = Point2f(1023, 620); // 1023 620
+		pts_rb = Point2f(1023, 870); // 1023 870
+		pts_lb = Point2f(0, 870); // 0 870
 
-		w = 900; h = 300; // 900 400
-		displace_l = 300; displace_r = 300;
+		w = 900; h = 300;
+		displace_l = 250; displace_r = 250;
 	}
 	else if (q == 1) // right
 	{
-		pts_lu = Point2f(200, 615); // 200 650
-		pts_ru = Point2f(1023, 510); // 1023 550
-		pts_rb = Point2f(1023, 1023); // 1023 1023
-		pts_lb = Point2f(0, 850); // 0 850
+		pts_lu = Point2f(200, 620); // 200 620
+		pts_ru = Point2f(1023, 520); // 1023 520
+		pts_rb = Point2f(1023, 930); // 1023 930
+		pts_lb = Point2f(0, 800); // 0 800
 
-		w = 1200; h = 300;
+		w = 1200; h = 250;
 		displace_l = 300; displace_r = 300;
 	}
 	else if (q == 0) // left
 	{
-		pts_lu = Point2f(0, 480); // 0 480
-		pts_ru = Point2f(780, 600); // 780 600
-		pts_rb = Point2f(1023, 850); // 1023 850
-		pts_lb = Point2f(0, 1023); // 0 1023
+		pts_lu = Point2f(0, 530); // 0 530
+		pts_ru = Point2f(850, 640); // 850 640
+		pts_rb = Point2f(1023, 790); // 1023 790
+		pts_lb = Point2f(0, 880); // 0 880
 
-		w = 1200; h = 300;
+		w = 1200; h = 250;
 		displace_l = 300; displace_r = 300;
 	}
 
@@ -56,36 +56,27 @@ Mat image_remap_auto(Mat im_src, int q)
 	pts_src.push_back(pts_rb);
 	pts_src.push_back(pts_lb);
 
-	if (q == 2) // destination points for rear view
-	{
-		pts_dst.push_back(Point2f(0.0f, 0.0f));
-		pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
-		pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
-		pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
-	}
-	else // destination points for left and right view
-	{
-		pts_dst.push_back(Point2f(0.0f, 0.0f));
-		pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
-		pts_dst.push_back(Point2f(float(size.width - 1), float(size.height - 1)));
-		pts_dst.push_back(Point2f(0.0f, float(size.height - 1)));
+	// destination points for rear, left, right view
+	pts_dst.push_back(Point2f(0.0f, 0.0f));
+	pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
+	pts_dst.push_back(Point2f(float(size.width - 1), float(size.height - 1)));
+	pts_dst.push_back(Point2f(0.0f, float(size.height - 1)));
 
-		homogr = findHomography(pts_src, pts_dst);
-		warpPerspective(im_src, im_src, homogr, size);
+	homogr = findHomography(pts_src, pts_dst);
+	warpPerspective(im_src, im_src, homogr, size);
 
-		pts_src.clear();
-		pts_dst.clear();
+	pts_src.clear();
+	pts_dst.clear();
 
-		pts_src.push_back(Point2f(0.0f, 0.0f));
-		pts_src.push_back(Point2f(size.width - 1.0f, 0.0f));
-		pts_src.push_back(Point2f(float(size.width - 1), float(size.height - 1)));
-		pts_src.push_back(Point2f(0.0f, float(size.height - 1)));
-
-		pts_dst.push_back(Point2f(0.0f, 0.0f));
-		pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
-		pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
-		pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
-	}
+	pts_src.push_back(Point2f(0.0f, 0.0f));
+	pts_src.push_back(Point2f(size.width - 1.0f, 0.0f));
+	pts_src.push_back(Point2f(float(size.width - 1), float(size.height - 1)));
+	pts_src.push_back(Point2f(0.0f, float(size.height - 1)));
+	
+	pts_dst.push_back(Point2f(0.0f, 0.0f));
+	pts_dst.push_back(Point2f(size.width - 1.0f, 0.0f));
+	pts_dst.push_back(Point2f(float(size.width - displace_r), float(size.height - 1)));
+	pts_dst.push_back(Point2f(float(displace_l), float(size.height - 1)));
 	
 	homogr = findHomography(pts_src, pts_dst);
 	warpPerspective(im_src, im_dst, homogr, size);

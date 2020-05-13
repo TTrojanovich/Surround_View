@@ -26,3 +26,7 @@ Mat image_remap_auto(Mat im_src, int q);
 void image_stats(Mat img, double& lMean, double& lStd, double& aMean, double& aStd, double& bMean, double& bStd);
 
 Mat color_corr(Mat src, Mat dst);
+
+void undistortFishEyeData(const Mat& distorted, const double w, Mat& map_x, Mat& map_y);
+
+Mat undistortFishEye(const Mat& distorted, const double w, Mat map_x, Mat map_y);
