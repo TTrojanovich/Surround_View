@@ -22,9 +22,9 @@ int main(int argc, char** argv)
 	// Put images in vectors
 	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
 
-	string folder_rear("imgs/datasets/dataset 5/rear/*.png");
-	string folder_left("imgs/datasets/dataset 5/left/*.png");
-	string folder_right("imgs/datasets/dataset 5/right/*.png");
+	string folder_rear("imgs/datasets/dataset 4/rear/*.png");
+	string folder_left("imgs/datasets/dataset 4/left/*.png");
+	string folder_right("imgs/datasets/dataset 4/right/*.png");
 
 	vector<String> im_names_rear1;
 	vector<String> im_names_left1;
