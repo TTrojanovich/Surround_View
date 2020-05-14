@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 		resizeWindow("Combined image", int(1500 * 0.8), int(1400 * 0.8));
 		imshow("Combined image", verdict);
 		//waitKey(0);
-		imwrite("example.png", verdict);
+		//imwrite("example.png", verdict);
 #endif
 
 		int key = waitKey(1);
