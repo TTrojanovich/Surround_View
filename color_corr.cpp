@@ -25,50 +25,46 @@ void image_stats(Mat img, double &lMean, double &lStd, double &aMean, double &aS
 }
 
 
-Mat color_corr(Mat src, Mat dst)
+Mat color_corr(Mat src, Mat ref)
 {
-	//Mat src = imread("imgs/61.png");
-	//Mat dst = imread("imgs/62.png");
+	//src = imread("imgs/61.png");
+	//ref = imread("imgs/62.png");
+
+	//imshow("original", src);
+	//imshow("reference", ref);
 	
 	cvtColor(src, src, COLOR_BGR2Lab);
-	cvtColor(dst, dst, COLOR_BGR2Lab);
+	cvtColor(ref, ref, COLOR_BGR2Lab);
 
 	src.convertTo(src, CV_32F);
-	dst.convertTo(dst, CV_32F);
+	ref.convertTo(ref, CV_32F);
 	
-	double lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc, lMeanDst, lStdDst, aMeanDst, aStdDst, bMeanDst, bStdDst;
+	double lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc, lMeanRef, lStdRef, aMeanRef, aStdRef, bMeanRef, bStdRef;
 	image_stats(src, lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc);
-	image_stats(dst, lMeanDst, lStdDst, aMeanDst, aStdDst, bMeanDst, bStdDst);
+	image_stats(ref, lMeanRef, lStdRef, aMeanRef, aStdRef, bMeanRef, bStdRef);
 
 	vector<Mat> layers;
-	split(dst, layers);
+	split(src, layers);
 	Mat l = layers[0];
 	Mat a = layers[1];
 	Mat b = layers[2];
 	
-	l = l - lMeanDst;
-	a = a - aMeanDst;
-	b = b - bMeanDst;
-
-	l = (lStdDst / lStdSrc) * l;
-	a = (aStdDst / aStdSrc) * a;
-	b = (bStdDst / bStdSrc) * b;
-
-	l = l + lMeanSrc;
-	a = a + aMeanSrc;
-	b = b + bMeanSrc;
-
-
-	Mat transfer;
-	Mat lab[3] = {l, a, b};
-	merge(lab, 3, transfer);
-	transfer.convertTo(transfer, CV_8U);
-	cvtColor(transfer, transfer, COLOR_Lab2BGR);
-	cvtColor(transfer, transfer, COLOR_BGR2BGRA);
 	
-	//imshow("res", transfer);
+	l = (lStdRef / lStdSrc) * (l - lMeanSrc) + lMeanRef;
+	a = (aStdRef / aStdSrc) * (a - aMeanSrc) + aMeanRef;
+	b = (bStdRef / bStdSrc) * (b - bMeanSrc) + bMeanRef;
+
+
+	Mat adjustment;
+	Mat lab[3] = {l, a, b};
+	merge(lab, 3, adjustment);
+	adjustment.convertTo(adjustment, CV_8U);
+	cvtColor(adjustment, adjustment, COLOR_Lab2BGR);
+	cvtColor(adjustment, adjustment, COLOR_BGR2BGRA);
+	
+	//imshow("res", adjustment);
 	//waitKey(0);
 
-	return transfer;
+	return adjustment;
 }
 

@@ -22,9 +22,9 @@ int main(int argc, char** argv)
 	// Put images in vectors
 	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
 
-	string folder_rear("imgs/datasets/dataset 4/rear/*.png");
-	string folder_left("imgs/datasets/dataset 4/left/*.png");
-	string folder_right("imgs/datasets/dataset 4/right/*.png");
+	string folder_rear("imgs/datasets/dataset 3/rear/*.png");
+	string folder_left("imgs/datasets/dataset 3/left/*.png");
+	string folder_right("imgs/datasets/dataset 3/right/*.png");
 
 	vector<String> im_names_rear1;
 	vector<String> im_names_left1;
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 		imshow("Image distorted left", im_left);
 		imshow("Image distorted right", im_right);
 #endif
-
+		
 
 		// Fisheye undistortion
 		auto time_tag_3 = getTickCount();
@@ -131,8 +131,8 @@ int main(int argc, char** argv)
 		
 
 #ifdef PROCESS_
-		im_left_eq = color_corr(im_rear_eq, im_left_eq);
-		im_right_eq = color_corr(im_rear_eq, im_right_eq);
+		im_left_eq = color_corr(im_left_eq, im_rear_eq);
+		im_right_eq = color_corr(im_right_eq, im_rear_eq);
 #endif
 
 
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 		imshow("Image remapped left", im_left_remap);
 		imshow("Image remapped right", im_right_remap);
 #endif
-
+		
 
 		// Merge 3 images in 1
 #ifdef PROCESS_5
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 		//waitKey(0);
 		//imwrite("example.png", verdict);
 #endif
-
+		
 		int key = waitKey(1);
 		if (key == 27) break;
 	}
