@@ -8,12 +8,15 @@ using namespace cv;
 
 
 #define W (63 * CV_PI / 180)
-#define WITH_STORAGE_
-#define IMG_SHOW_
+#define WITH_STORAGE_1
+//#define IMG_SHOW_0
+//#define IMG_SHOW_1
+//#define IMG_SHOW_2
+//#define IMG_SHOW_3
 #define PROCESS_1
 #define PROCESS_2
 #define PROCESS_3
-#define PROCESS_4
+//#define PROCESS_4
 #define PROCESS_5
 
 
@@ -21,6 +24,8 @@ int main(int argc, char** argv)
 {
 	// Put images in vectors
 	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
+	Mat im_rear_eq(1024, 1024, CV_8UC4), im_left_eq(1024, 1024, CV_8UC4), im_right_eq(1024, 1024, CV_8UC4);
+	Mat im_left_remap, im_right_remap, im_rear_remap, im_rear_eq_temp, verdict;
 
 	string folder_rear("imgs/datasets/dataset 3/rear/*.png");
 	string folder_left("imgs/datasets/dataset 3/left/*.png");
@@ -40,8 +45,10 @@ int main(int argc, char** argv)
 	glob(folder_left, im_names_left1, false);
 	glob(folder_right, im_names_right1, false);
 
+	auto minsize = min(im_names_left1.size(), min(im_names_right1.size(), im_names_rear1.size()));
+
 #ifdef WITH_STORAGE_1
-	for (size_t k = 0; k < im_names_rear1.size(); k++)
+	for (size_t k = 0; k < minsize; k++)
 	{
 		im_names_rear.push_back(imread(im_names_rear1[k], IMREAD_GRAYSCALE));
 		im_names_left.push_back(imread(im_names_left1[k], IMREAD_GRAYSCALE));
@@ -65,6 +72,9 @@ int main(int argc, char** argv)
 	undistortFishEyeData(im_rear, W, map_x, map_y);
 
 	
+	Mat car_mask, img_car;
+	car_init(img_car, car_mask);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,9 +123,8 @@ int main(int argc, char** argv)
 		// Fisheye undistortion
 		auto time_tag_3 = getTickCount();
 #ifdef PROCESS_2
-		Mat im_rear_eq, im_right_eq, im_left_eq, im_front_eq;
 		//remap(im_rear, im_rear_eq, mapx_re, mapy_re, INTER_LINEAR, BORDER_CONSTANT);
-		im_rear_eq = undistortFishEye(im_rear, W, map_x, map_y);
+		remap(im_rear, im_rear_eq, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT);
 		remap(im_right, im_right_eq, mapx_rh, mapy_rh, INTER_LINEAR, BORDER_CONSTANT);
 		remap(im_left, im_left_eq, mapx_le, mapy_le, INTER_LINEAR, BORDER_CONSTANT);
 #endif
@@ -130,17 +139,18 @@ int main(int argc, char** argv)
 #endif
 		
 
-#ifdef PROCESS_
-		im_left_eq = color_corr(im_left_eq, im_rear_eq);
-		im_right_eq = color_corr(im_right_eq, im_rear_eq);
+#ifdef PROCESS_4
+		cvtColor(im_rear_eq, im_rear_eq_temp, COLOR_BGR2Lab);
+	    color_corr(im_left_eq, im_rear_eq_temp);
+		color_corr(im_right_eq, im_rear_eq_temp);
 #endif
 
 
 		// Top view remapping
 #ifdef PROCESS_3
-		Mat im_rear_remap = image_remap_auto(im_rear_eq, 2);
-		Mat im_right_remap = image_remap_auto(im_right_eq, 1);
-		Mat im_left_remap = image_remap_auto(im_left_eq, 0);
+		im_rear_remap = image_remap_auto(im_rear_eq, 2);
+		im_right_remap = image_remap_auto(im_right_eq, 1);
+		im_left_remap = image_remap_auto(im_left_eq, 0);
 #endif
 
 
@@ -153,7 +163,7 @@ int main(int argc, char** argv)
 
 		// Merge 3 images in 1
 #ifdef PROCESS_5
-		Mat verdict = combine(im_rear_remap, im_left_remap, im_right_remap);
+		verdict = combine(im_rear_remap, im_left_remap, im_right_remap, img_car, car_mask);
 		namedWindow("Combined image", WINDOW_NORMAL);
 		resizeWindow("Combined image", int(1500 * 0.8), int(1400 * 0.8));
 		imshow("Combined image", verdict);

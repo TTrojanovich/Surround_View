@@ -19,14 +19,14 @@ using namespace cv;
 
 void init(Mat& K_le, Mat& d_le, Mat& K_rh, Mat& d_rh, Mat& K_re, Mat& d_re);
 
-Mat combine(Mat img_re, Mat img_le, Mat img_ri);
+Mat combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask);
 
-Mat image_remap_auto(Mat im_src, int q);
+Mat image_remap_auto(Mat &im_src, int q);
 
 void image_stats(Mat img, double& lMean, double& lStd, double& aMean, double& aStd, double& bMean, double& bStd);
 
-Mat color_corr(Mat src, Mat ref);
+void color_corr(Mat &src, Mat &ref);
 
 void undistortFishEyeData(const Mat& distorted, const double w, Mat& map_x, Mat& map_y);
 
-Mat undistortFishEye(const Mat& distorted, const double w, Mat map_x, Mat map_y);
+void car_init(Mat &img_car, Mat &car_mask);

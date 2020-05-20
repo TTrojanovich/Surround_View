@@ -6,7 +6,7 @@ using namespace cv;
 
 
 
-Mat image_remap_auto(Mat im_src, int q)
+Mat image_remap_auto(Mat &im_src, int q)
 {
 	vector<Point2f> pts_dst, pts_src;
 

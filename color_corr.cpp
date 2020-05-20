@@ -25,7 +25,7 @@ void image_stats(Mat img, double &lMean, double &lStd, double &aMean, double &aS
 }
 
 
-Mat color_corr(Mat src, Mat ref)
+void color_corr(Mat &src, Mat &ref)
 {
 	//src = imread("imgs/61.png");
 	//ref = imread("imgs/62.png");
@@ -34,11 +34,7 @@ Mat color_corr(Mat src, Mat ref)
 	//imshow("reference", ref);
 	
 	cvtColor(src, src, COLOR_BGR2Lab);
-	cvtColor(ref, ref, COLOR_BGR2Lab);
 
-	src.convertTo(src, CV_32F);
-	ref.convertTo(ref, CV_32F);
-	
 	double lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc, lMeanRef, lStdRef, aMeanRef, aStdRef, bMeanRef, bStdRef;
 	image_stats(src, lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc);
 	image_stats(ref, lMeanRef, lStdRef, aMeanRef, aStdRef, bMeanRef, bStdRef);
@@ -55,16 +51,12 @@ Mat color_corr(Mat src, Mat ref)
 	b = (bStdRef / bStdSrc) * (b - bMeanSrc) + bMeanRef;
 
 
-	Mat adjustment;
 	Mat lab[3] = {l, a, b};
-	merge(lab, 3, adjustment);
-	adjustment.convertTo(adjustment, CV_8U);
-	cvtColor(adjustment, adjustment, COLOR_Lab2BGR);
-	cvtColor(adjustment, adjustment, COLOR_BGR2BGRA);
+	merge(lab, 3, src);
+	cvtColor(src, src, COLOR_Lab2BGR);
+	cvtColor(src, src, COLOR_BGR2BGRA);
 	
 	//imshow("res", adjustment);
 	//waitKey(0);
-
-	return adjustment;
 }
 

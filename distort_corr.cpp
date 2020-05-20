@@ -28,11 +28,3 @@ void undistortFishEyeData(const Mat& distorted, const double w, Mat &map_x, Mat 
 
 
 
-Mat undistortFishEye(const Mat& distorted, const double w, Mat map_x, Mat map_y)
-{
-	Mat undistorted;
-	remap(distorted, undistorted, map_x, map_y, INTER_LINEAR);
-
-	return undistorted;
-}
-
