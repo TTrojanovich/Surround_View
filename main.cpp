@@ -8,7 +8,7 @@ using namespace cv;
 
 
 #define W (63 * CV_PI / 180)
-#define WITH_STORAGE_1
+#define WITH_STORAGE
 //#define IMG_SHOW_0
 //#define IMG_SHOW_1
 //#define IMG_SHOW_2
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	vector<String> im_names_left_tmp;
 	vector<String> im_names_right_tmp;
 
-#ifdef WITH_STORAGE_1
+#ifdef WITH_STORAGE
 	vector<Mat> im_names_rear;
 	vector<Mat> im_names_left;
 	vector<Mat> im_names_right;
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	glob(folder_left, im_names_left_tmp, false);
 	glob(folder_right, im_names_right_tmp, false);
 
-#ifdef WITH_STORAGE_1
+#ifdef WITH_STORAGE
 	for (int i = 0; ((i != im_names_rear_tmp.size()) && (i != im_names_right_tmp.size()) && (i != im_names_left_tmp.size())); ++i)
 	{
 		im_names_rear.push_back(imread(im_names_rear_tmp[i], IMREAD_GRAYSCALE));
@@ -86,14 +86,14 @@ int main(int argc, char** argv)
 	{
 		cout << "IMAGE NUM: " << i << endl;
 		
-#ifdef WITH_STORAGE_1
+#ifdef WITH_STORAGE
 		im_rear = im_names_rear[i];
 		im_left = im_names_left[i];
 		im_right = im_names_right[i];
 #else
-		im_rear = imread(im_names_rear1[i], IMREAD_GRAYSCALE);
-		im_left = imread(im_names_left1[i], IMREAD_GRAYSCALE);
-		im_right = imread(im_names_right1[i], IMREAD_GRAYSCALE);
+		im_rear = imread(im_names_rear_tmp[i], IMREAD_GRAYSCALE);
+		im_left = imread(im_names_left_tmp[i], IMREAD_GRAYSCALE);
+		im_right = imread(im_names_right_tmp[i], IMREAD_GRAYSCALE);
 #endif
 
 		
