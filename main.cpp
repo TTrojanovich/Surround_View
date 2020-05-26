@@ -25,62 +25,64 @@ int main(int argc, char** argv)
 	// Put images in vectors
 	Mat im_rear(1024, 1024, CV_8UC1), im_left(1024, 1024, CV_8UC1), im_right(1024, 1024, CV_8UC1);
 	Mat im_rear_eq(1024, 1024, CV_8UC4), im_left_eq(1024, 1024, CV_8UC4), im_right_eq(1024, 1024, CV_8UC4);
-	Mat im_left_remap, im_right_remap, im_rear_remap, im_rear_eq_temp, verdict;
+	Mat im_left_remap, im_right_remap, im_rear_remap, im_rear_eq_temp;
+	Mat verdict = Mat(1400, 1500, CV_8UC3);
 
 	string folder_rear("imgs/datasets/dataset 3/rear/*.png");
 	string folder_left("imgs/datasets/dataset 3/left/*.png");
 	string folder_right("imgs/datasets/dataset 3/right/*.png");
 
-	vector<String> im_names_rear1;
-	vector<String> im_names_left1;
-	vector<String> im_names_right1;
+	vector<String> im_names_rear_tmp;
+	vector<String> im_names_left_tmp;
+	vector<String> im_names_right_tmp;
 
 #ifdef WITH_STORAGE_1
 	vector<Mat> im_names_rear;
 	vector<Mat> im_names_left;
 	vector<Mat> im_names_right;
+	im_names_rear.reserve(200);
+	im_names_left.reserve(200);
+	im_names_right.reserve(200);
 #endif
 
-	glob(folder_rear, im_names_rear1, false);
-	glob(folder_left, im_names_left1, false);
-	glob(folder_right, im_names_right1, false);
-
-	auto minsize = min(im_names_left1.size(), min(im_names_right1.size(), im_names_rear1.size()));
+	glob(folder_rear, im_names_rear_tmp, false);
+	glob(folder_left, im_names_left_tmp, false);
+	glob(folder_right, im_names_right_tmp, false);
 
 #ifdef WITH_STORAGE_1
-	for (size_t k = 0; k < minsize; k++)
+	for (int i = 0; ((i != im_names_rear_tmp.size()) && (i != im_names_right_tmp.size()) && (i != im_names_left_tmp.size())); ++i)
 	{
-		im_names_rear.push_back(imread(im_names_rear1[k], IMREAD_GRAYSCALE));
-		im_names_left.push_back(imread(im_names_left1[k], IMREAD_GRAYSCALE));
-		im_names_right.push_back(imread(im_names_right1[k], IMREAD_GRAYSCALE));
+		im_names_rear.push_back(imread(im_names_rear_tmp[i], IMREAD_GRAYSCALE));
+		im_names_left.push_back(imread(im_names_left_tmp[i], IMREAD_GRAYSCALE));
+		im_names_right.push_back(imread(im_names_right_tmp[i], IMREAD_GRAYSCALE));
 	}
 #endif
 
 	// Create and initialize variables for camera intrinsics
-	cv::Mat K_le(3, 3, CV_64F), K_rh(3, 3, CV_64F), K_re(3, 3, CV_64F);
-	cv::Mat d_le(5, 1, CV_64F), d_rh(5, 1, CV_64F), d_re(5, 1, CV_64F);
+	Mat K_le(3, 3, CV_64F), K_rh(3, 3, CV_64F), K_re(3, 3, CV_64F);
+	Mat d_le(5, 1, CV_64F), d_rh(5, 1, CV_64F), d_re(5, 1, CV_64F);
 	init(K_le, d_le, K_rh, d_rh, K_re, d_re);
 
 
 	// Precalculate data for undistortion
 	Mat mapx_re, mapy_re, mapx_rh, mapy_rh, mapx_le, mapy_le;
-	//cv::initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
-	cv::initUndistortRectifyMap(K_rh, d_rh, Mat::eye(3, 3, CV_32FC1), K_rh, Size(1024, 1024), CV_32FC1, mapx_rh, mapy_rh);
-	cv::initUndistortRectifyMap(K_le, d_le, Mat::eye(3, 3, CV_32FC1), K_le, Size(1024, 1024), CV_32FC1, mapx_le, mapy_le);
+	//initUndistortRectifyMap(K_re, d_re, Mat::eye(3, 3, CV_32FC1), K_re, Size(1024, 1024), CV_32FC1, mapx_re, mapy_re);
+	initUndistortRectifyMap(K_rh, d_rh, Mat::eye(3, 3, CV_32FC1), K_rh, Size(1024, 1024), CV_32FC1, mapx_rh, mapy_rh);
+	initUndistortRectifyMap(K_le, d_le, Mat::eye(3, 3, CV_32FC1), K_le, Size(1024, 1024), CV_32FC1, mapx_le, mapy_le);
 
 	Mat map_x, map_y;
 	undistortFishEyeData(im_rear, W, map_x, map_y);
 
-	
 	Mat car_mask, img_car;
 	car_init(img_car, car_mask);
 
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	for (int i = 0; i < im_names_rear1.size(); i++)
+	for (int i = 0; ((i != im_names_rear.size()) && (i != im_names_right.size()) && (i != im_names_left.size())); ++i)
 	{
 		cout << "IMAGE NUM: " << i << endl;
 		
@@ -148,9 +150,9 @@ int main(int argc, char** argv)
 
 		// Top view remapping
 #ifdef PROCESS_3
-		im_rear_remap = image_remap_auto(im_rear_eq, 2);
-		im_right_remap = image_remap_auto(im_right_eq, 1);
-		im_left_remap = image_remap_auto(im_left_eq, 0);
+		im_rear_remap = image_remap_auto(im_rear_eq, img_type::REAR);
+		im_right_remap = image_remap_auto(im_right_eq, img_type::RIGHT);
+		im_left_remap = image_remap_auto(im_left_eq, img_type::LEFT);
 #endif
 
 
@@ -163,7 +165,7 @@ int main(int argc, char** argv)
 
 		// Merge 3 images in 1
 #ifdef PROCESS_5
-		verdict = combine(im_rear_remap, im_left_remap, im_right_remap, img_car, car_mask);
+		combine(im_rear_remap, im_left_remap, im_right_remap, img_car, car_mask, verdict);
 		namedWindow("Combined image", WINDOW_NORMAL);
 		resizeWindow("Combined image", int(1500 * 0.8), int(1400 * 0.8));
 		imshow("Combined image", verdict);

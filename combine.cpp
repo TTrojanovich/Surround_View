@@ -5,21 +5,29 @@ using namespace std;
 using namespace cv;
 
 
-Mat combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask)
+void position(Mat &img, const int &pos_height, const int &pos_width, Mat &dst)
 {
+	Mat mask;
+	vector<Mat> layers; 
+	layers.reserve(3);
+	split(img, layers);
+	Mat bgr[3] = { layers[0], layers[1], layers[2] };
+	mask = layers[3];
+	merge(bgr, 3, img);
+	img.copyTo(dst.rowRange(pos_height, pos_height + img.rows).colRange(pos_width, pos_width + img.cols), mask);
+}
 
-	Size i_size = img_ri.size();
-	int w = i_size.width, h = i_size.height;
-	
+
+void combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask, Mat &dst)
+{
+	Point2i center(img_ri.size().width / 2, img_ri.size().height / 2);
+
 	// Rotate left and right images 90 degrees
-
-	Point2i center(w / 2, h / 2);
-	
 	Mat RM1 = getRotationMatrix2D(center, 90, 1.0);
-	Rect2f bbox1 = RotatedRect(Point2f(), i_size, (float)90).boundingRect2f();
+	Rect2f bbox1 = RotatedRect(Point2f(), img_ri.size(), (float)90).boundingRect2f();
 
 	Mat RM2 = getRotationMatrix2D(center, -90, 1.0);
-	Rect2f bbox2 = RotatedRect(Point2f(), i_size, (float)(-90)).boundingRect2f();
+	Rect2f bbox2 = RotatedRect(Point2f(), img_ri.size(), (float)(-90)).boundingRect2f();
 	
 	RM1.at<double>(0, 2) += bbox1.width / 2.0 - img_ri.cols / 2.0;
 	RM1.at<double>(1, 2) += bbox1.height / 2.0 - img_ri.rows / 2.0;
@@ -30,43 +38,19 @@ Mat combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask)
 	warpAffine(img_ri, img_ri, RM1, bbox1.size());
 	warpAffine(img_le, img_le, RM2, bbox2.size());
 
-	// Create destination image
-
-	Mat dst = Mat(1400, 1500, CV_8UC3); // 1200 1500
-
-	Mat mask;
-	vector<Mat> layers;
-	int he = 30;
-	int wi1 = 330;
-	int wi2 = 980;
-	int he1 = 30;
-	int he2 = he1 - 15 + img_re.rows;
-	int wi3 = wi1 - 80 + img_re.cols / 3;
-
-	// Split 4 channels, merge BGR channels and setting the alpha channel as a mask
-
-	split(img_ri, layers);
-	Mat rgb1[3] = { layers[0],layers[1],layers[2] };
-	mask = layers[3];
-	merge(rgb1, 3, img_ri);
-	img_ri.copyTo(dst.rowRange(he, he + img_ri.rows).colRange(wi1, wi1 + img_ri.cols), mask);
-
-	split(img_le, layers);
-	Mat rgb2[3] = { layers[0],layers[1],layers[2] };
-	mask = layers[3];
-	merge(rgb2, 3, img_le);
-	img_le.copyTo(dst.rowRange(he, he + img_le.rows).colRange(wi2, wi2 + img_le.cols), mask);
-
-	split(img_re, layers);
-	Mat rgb3[3] = { layers[0],layers[1],layers[2] };
-	mask = layers[3];
-	merge(rgb3, 3, img_re);
-	img_re.copyTo(dst.rowRange(he1, he1 + img_re.rows).colRange(wi1, wi1 + img_re.cols), mask);
-
+	const int pos_height_side = 30;
+	const int pos_width_right = 330;
+	const int pos_width_left = 980;
+	const int pos_height_rear = 30;
+	const int pos_height_car = pos_height_rear - 15 + img_re.rows;
+	const int pos_width_car = pos_width_right - 80 + img_re.cols / 3;
 	
-	img_car.copyTo(dst.rowRange(he2, he2 + img_car.rows).colRange(wi3, wi3 + img_car.cols), car_mask);
+	position(img_ri, pos_height_side, pos_width_right, dst);
+	position(img_le, pos_height_side, pos_width_left, dst);
+	position(img_re, pos_height_rear, pos_width_right, dst);
 	
-	return dst;
+	img_car.copyTo(dst.rowRange(pos_height_car, pos_height_car + img_car.rows).colRange(pos_width_car, pos_width_car + img_car.cols), car_mask);
+
 }
 
 

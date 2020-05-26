@@ -17,11 +17,13 @@ using namespace std;
 using namespace cv; 
 
 
+enum class img_type { REAR, RIGHT, LEFT };
+
 void init(Mat& K_le, Mat& d_le, Mat& K_rh, Mat& d_rh, Mat& K_re, Mat& d_re);
 
-Mat combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask);
+void combine(Mat &img_re, Mat &img_le, Mat &img_ri, Mat &img_car, Mat &car_mask, Mat &dst);
 
-Mat image_remap_auto(Mat &im_src, int q);
+Mat image_remap_auto(Mat &im_src, img_type type);
 
 void image_stats(Mat img, double& lMean, double& lStd, double& aMean, double& aStd, double& bMean, double& bStd);
 

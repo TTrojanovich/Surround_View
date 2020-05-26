@@ -51,7 +51,7 @@ void color_corr(Mat &src, Mat &ref)
 	b = (bStdRef / bStdSrc) * (b - bMeanSrc) + bMeanRef;
 
 
-	Mat lab[3] = {l, a, b};
+	Mat lab[3] = { l, a, b };
 	merge(lab, 3, src);
 	cvtColor(src, src, COLOR_Lab2BGR);
 	cvtColor(src, src, COLOR_BGR2BGRA);

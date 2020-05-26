@@ -5,10 +5,10 @@ using namespace std;
 using namespace cv;
 
 
-
-Mat image_remap_auto(Mat &im_src, int q)
+Mat image_remap_auto(Mat &im_src, img_type type)
 {
 	vector<Point2f> pts_dst, pts_src;
+	pts_dst.reserve(4), pts_dst.reserve(4);
 
 	// lu = left up , ru = right up , etc...
 	Point2f pts_lu, pts_ru, pts_rb, pts_lb;
@@ -16,7 +16,7 @@ Mat image_remap_auto(Mat &im_src, int q)
 
 	// Set points in region of interest
 
-	if (q == 2) // rear
+	if (type == img_type::REAR)
 	{
 		pts_lu = Point2f(0, 620); // 0 620
 		pts_ru = Point2f(1023, 620); // 1023 620
@@ -26,7 +26,7 @@ Mat image_remap_auto(Mat &im_src, int q)
 		w = 900; h = 300;
 		displace_l = 250; displace_r = 250;
 	}
-	else if (q == 1) // right
+	else if (type == img_type::RIGHT)
 	{
 		pts_lu = Point2f(200, 620); // 200 620
 		pts_ru = Point2f(1023, 520); // 1023 520
@@ -36,7 +36,7 @@ Mat image_remap_auto(Mat &im_src, int q)
 		w = 1200; h = 250;
 		displace_l = 300; displace_r = 300;
 	}
-	else if (q == 0) // left
+	else if (type == img_type::LEFT) // left
 	{
 		pts_lu = Point2f(0, 530); // 0 530
 		pts_ru = Point2f(850, 640); // 850 640
