@@ -52,9 +52,9 @@ int main(int argc, char** argv)
 #ifdef WITH_STORAGE
 	for (int i = 0; ((i != im_names_rear_tmp.size()) && (i != im_names_right_tmp.size()) && (i != im_names_left_tmp.size())); ++i)
 	{
-		im_names_rear.push_back(imread(im_names_rear_tmp[i], IMREAD_GRAYSCALE));
-		im_names_left.push_back(imread(im_names_left_tmp[i], IMREAD_GRAYSCALE));
-		im_names_right.push_back(imread(im_names_right_tmp[i], IMREAD_GRAYSCALE));
+		im_names_rear.emplace_back(imread(im_names_rear_tmp[i], IMREAD_GRAYSCALE));
+		im_names_left.emplace_back(imread(im_names_left_tmp[i], IMREAD_GRAYSCALE));
+		im_names_right.emplace_back(imread(im_names_right_tmp[i], IMREAD_GRAYSCALE));
 	}
 #endif
 
