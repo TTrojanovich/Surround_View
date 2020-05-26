@@ -40,9 +40,9 @@ int main(int argc, char** argv)
 	vector<Mat> im_names_rear;
 	vector<Mat> im_names_left;
 	vector<Mat> im_names_right;
-	im_names_rear.reserve(200);
-	im_names_left.reserve(200);
-	im_names_right.reserve(200);
+	im_names_rear.reserve(150);
+	im_names_left.reserve(150);
+	im_names_right.reserve(150);
 #endif
 
 	glob(folder_rear, im_names_rear_tmp, false);
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	for (int i = 0; ((i != im_names_rear.size()) && (i != im_names_right.size()) && (i != im_names_left.size())); ++i)
+	for (int i = 0; ((i != im_names_rear_tmp.size()) && (i != im_names_right_tmp.size()) && (i != im_names_left_tmp.size())); ++i)
 	{
 		cout << "IMAGE NUM: " << i << endl;
 		
