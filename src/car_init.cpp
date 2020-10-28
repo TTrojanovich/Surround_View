@@ -7,7 +7,7 @@ using namespace cv;
 void car_init(Mat &img_car, Mat &car_mask)
 {
 	const double scalar = 1.15;
-	img_car = imread("imgs/datasets/car_model.png", IMREAD_UNCHANGED);
+	img_car = imread("./imgs/datasets/car_model.png", IMREAD_UNCHANGED);
 	resize(img_car, img_car, Size(int(img_car.size().width * scalar), int(img_car.size().height * scalar)));
 
 	Mat RM = getRotationMatrix2D(Point2i(img_car.size().width / 2, img_car.size().height / 2), 90, 1.0);
