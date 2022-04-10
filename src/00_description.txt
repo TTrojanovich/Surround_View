@@ -1,9 +1,0 @@
-===== FILES FUNCTIONALITY DESCRIPTION =====
-
-car_init - single car model initialization for usage in combine.cpp
-color_corr - color correction
-combine - combine right, rear, left and car in one image
-distort_corr - maps for fisheye undistortion
-IM_H_auto - selecting ROI for every camera
-init - load camera intrinsics
-main - load data, general pipeline
